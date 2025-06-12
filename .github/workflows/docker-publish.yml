@@ -8,7 +8,7 @@ on:
       - '.github/workflows/docker-publish.yml'
 
 env:
-  DOCKERHUB_REPO_TERRAFORM: ricklin/terraform-azure
+  DOCKERHUB_REPO_TERRAFORM: ricklin/terraform
   TERRAFORM_VERSION: 1.12.0
 
 jobs:
