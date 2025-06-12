@@ -1,0 +1,45 @@
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# macOS folder attributes
+__MACOSX/
+
+# macOS resource fork files
+*.Spotlight-V100
+*.Trashes
+*.fseventsd
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
+crash.log
+
+# Docker build cache / containers
+*.tar
+*.img
+*.log
+docker-compose.override.yml
+
+# Build/test artifacts
+*.zip
+/tmp/
+test-tf/.terraform/
+test-tf/.terraform.lock.hcl
+test-tf/terraform.tfstate*
+*.tfplan
+
+# Editor/IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Shell history/output
+*.log
+*.out
+*.bak
+*.tmp
