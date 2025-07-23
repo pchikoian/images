@@ -11,7 +11,8 @@ COPY providers.txt /tmp/providers.txt
 
 # Run installation
 RUN chmod +x /usr/local/bin/install_providers.sh && \
-          /usr/local/bin/install_providers.sh
+          /usr/local/bin/install_providers.sh && \
+    apk add --no-cache vim jq yq
 
 # Set workdir and copy configs
 WORKDIR /app
