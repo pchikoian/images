@@ -2,3 +2,4 @@ hashicorp/azurerm 3.79.0
 hashicorp/random 3.6.0
 hashicorp/google 6.39.0
 hashicorp/archive 2.7.1
+microsoft/azuredevops 1.10.0
