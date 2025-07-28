@@ -19,7 +19,11 @@ while read -r line || [ -n "$line" ]; do
   plugin_dir="/root/.terraform.d/plugins/registry.terraform.io/${namespace}/${name}/${version}/linux_${TARGET_ARCH}"
 
   mkdir -p "$plugin_dir"
-  url="https://releases.hashicorp.com/terraform-provider-${name}/${version}/terraform-provider-${name}_${version}_linux_${TARGET_ARCH}.zip"
+  if [[ $namespace == microsoft* ]]; then
+    url="https://github.com/microsoft/terraform-provider-${name}/releases/download/${version}/terraform-provider-${name}_${version}_linux_${TARGET_ARCH}.zip"
+  else
+    url="https://releases.hashicorp.com/terraform-provider-${name}/${version}/terraform-provider-${name}_${version}_linux_${TARGET_ARCH}.zip"
+  fi
 
   echo "Downloading: $url"
   wget -q "$url" -O /tmp/provider.zip
