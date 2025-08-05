@@ -12,7 +12,7 @@ COPY providers.txt /tmp/providers.txt
 # Run installation
 RUN chmod +x /usr/local/bin/install_providers.sh && \
           /usr/local/bin/install_providers.sh && \
-    apk add --no-cache vim jq yq
+    apk add --no-cache vim jq yq python3 py3-pip
 
 # Set workdir and copy configs
 WORKDIR /app
