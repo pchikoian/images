@@ -9,7 +9,7 @@ on:
 
 env:
   DOCKERHUB_REPO_TERRAFORM: ricklin/terraform
-  TERRAFORM_VERSION: 1.12.2
+  TERRAFORM_VERSION: 1.13.1
 
 jobs:
   build-and-push:
