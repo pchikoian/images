@@ -16,7 +16,7 @@ COPY providers.txt /tmp/providers.txt
 RUN chmod +x /usr/local/bin/install_*.sh && \
           /usr/local/bin/install_providers.sh && \
           /usr/local/bin/install_terragrunt.sh && \
-    apk add --no-cache vim jq yq python3 py3-pip openssl
+    apk add --no-cache vim jq yq python3 py3-pip openssl curl
 
 # Set workdir and copy configs
 WORKDIR /app
