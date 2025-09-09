@@ -16,19 +16,30 @@ while read -r line || [ -n "$line" ]; do
   version=$(echo "$line" | awk '{print $2}')
   namespace=$(echo "$namespace_name" | cut -d'/' -f1)
   name=$(echo "$namespace_name" | cut -d'/' -f2)
-  plugin_dir="/root/.terraform.d/plugins/registry.terraform.io/${namespace}/${name}/${version}/linux_${TARGET_ARCH}"
-
-  mkdir -p "$plugin_dir"
+  
+  # For Microsoft providers, remove 'v' prefix from version for plugin directory
   if [[ $namespace == microsoft* ]]; then
+    clean_version="${version#v}"
+    plugin_dir="/root/.terraform.d/plugins/registry.terraform.io/${namespace}/${name}/${clean_version}/linux_${TARGET_ARCH}"
     url="https://github.com/microsoft/terraform-provider-${name}/releases/download/${version}/terraform-provider-${name}_${version}_linux_${TARGET_ARCH}.zip"
   else
+    plugin_dir="/root/.terraform.d/plugins/registry.terraform.io/${namespace}/${name}/${version}/linux_${TARGET_ARCH}"
     url="https://releases.hashicorp.com/terraform-provider-${name}/${version}/terraform-provider-${name}_${version}_linux_${TARGET_ARCH}.zip"
   fi
+
+  mkdir -p "$plugin_dir"
 
   echo "Downloading: $url"
   wget -q "$url" -O /tmp/provider.zip
   unzip -q /tmp/provider.zip -d "$plugin_dir"
-  # chmod +x "$plugin_dir/terraform-provider-${name}"
+  
+  # For Microsoft providers, rename the binary to remove 'v' prefix
+  if [[ $namespace == microsoft* ]]; then
+    if [ -f "$plugin_dir/terraform-provider-${name}_${version}" ]; then
+      mv "$plugin_dir/terraform-provider-${name}_${version}" "$plugin_dir/terraform-provider-${name}_${clean_version}"
+    fi
+  fi
+  
   rm /tmp/provider.zip
 done < /tmp/providers.txt
 
