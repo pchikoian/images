@@ -16,10 +16,19 @@ COPY providers.txt /tmp/providers.txt
 RUN chmod +x /usr/local/bin/install_*.sh && \
           /usr/local/bin/install_providers.sh && \
           /usr/local/bin/install_terragrunt.sh && \
-    apk add --no-cache vim jq yq python3 py3-pip openssl curl
+    apk add --no-cache vim jq yq python3 py3-pip openssl curl && \
+    python3 -m venv /opt/venv && \
+    /opt/venv/bin/pip install --upgrade pip
 
 # Set workdir and copy configs
 WORKDIR /app
 COPY . /app
+
+# Install Python requirements in virtual environment
+COPY requirements.txt /tmp/requirements.txt
+RUN /opt/venv/bin/pip install -r /tmp/requirements.txt
+
+# Add venv to PATH
+ENV PATH="/opt/venv/bin:$PATH"
 
 CMD ["terraform", "version"]
