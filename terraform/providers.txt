@@ -3,4 +3,5 @@ hashicorp/random 3.7.2
 hashicorp/google 6.49.2
 hashicorp/archive 2.7.1
 hashicorp/null 3.2.4
+hashicorp/local 2.5.3
 microsoft/azuredevops v1.11.2
