@@ -4,4 +4,5 @@ hashicorp/google 6.49.2
 hashicorp/archive 2.7.1
 hashicorp/null 3.2.4
 hashicorp/local 2.5.3
+hashicorp/external 2.3.5
 microsoft/azuredevops v1.11.2
