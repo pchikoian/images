@@ -34,3 +34,4 @@ To import the Grafana dashboard:
 4. Select the Data Source as Prometheus and click Import.
 
 ![Screenshot](grafana-dashboard/screenshot.png)
+
