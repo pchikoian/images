@@ -32,6 +32,7 @@ services:
       - FLASK_APP=app.py
       - FLASK_DEBUG=0
       - PYTHONUNBUFFERED=1
+      - QUERY_TIMEOUT=30  # Timeout for Neo4j queries in seconds
     depends_on:
       neo4j:
         condition: service_healthy
