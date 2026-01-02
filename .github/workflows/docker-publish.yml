@@ -11,6 +11,7 @@ on:
 env:
   DOCKERHUB_REPO_TERRAFORM: ricklin/terraform
   DOCKERHUB_REPO_NEO4J_EXPORTER: ricklin/neo4j_exporter
+  DOCKERHUB_REPO_TEMPORAL_ADMIN_TOOLS: ricklin/temporal_admin_tools
   TERRAFORM_VERSION: 1.13.1
 
 jobs:
@@ -90,3 +91,37 @@ jobs:
           tags: |
             ${{ env.DOCKERHUB_REPO_NEO4J_EXPORTER }}:latest
             ${{ env.DOCKERHUB_REPO_NEO4J_EXPORTER }}:${{ steps.vars.outputs.sha_short }}
+
+  build-and-push-temporal-admin:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Show Docker Hub username
+        run: echo "DOCKER_USER is ${{ secrets.DOCKERHUB_USERNAME }}"
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Get short commit SHA
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Build and push Temporal admin tool image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./temporal_admin
+          file: ./temporal_admin/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_TEMPORAL_ADMIN_TOOLS }}:latest
+            ${{ env.DOCKERHUB_TEMPORAL_ADMIN_TOOLS }}:${{ steps.vars.outputs.sha_short }}
