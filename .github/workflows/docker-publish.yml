@@ -132,5 +132,5 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ${{ env.DOCKERHUB_TEMPORAL_ADMIN_TOOLS }}:latest
-            ${{ env.DOCKERHUB_TEMPORAL_ADMIN_TOOLS }}:${{ steps.vars.outputs.sha_short }}
+            ${{ env.DOCKERHUB_REPO_TEMPORAL_ADMIN_TOOLS }}:latest
+            ${{ env.DOCKERHUB_REPO_TEMPORAL_ADMIN_TOOLS }}:${{ steps.vars.outputs.sha_short }}
