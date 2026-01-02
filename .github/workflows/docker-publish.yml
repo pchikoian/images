@@ -15,6 +15,14 @@ env:
   TERRAFORM_VERSION: 1.13.1
 
 jobs:
+  echo_context:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+
   build-and-push-terraform:
     runs-on: ubuntu-latest
     if: contains(github.event.head_commit.modified, 'terraform/') || contains(github.event.head_commit.added, 'terraform/')
@@ -60,6 +68,7 @@ jobs:
 
   build-and-push-neo4j-exporter:
     runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.modified, 'neo4j_exporter/') || contains(github.event.head_commit.added, 'neo4j_exporter/')
 
     steps:
       - name: Checkout source
