@@ -27,9 +27,39 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
 
-  build-and-push-terraform:
+  detect-changes:
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.modified, 'terraform/') || contains(github.event.head_commit.added, 'terraform/')
+    outputs:
+      terraform: ${{ steps.filter.outputs.terraform }}
+      neo4j_exporter: ${{ steps.filter.outputs.neo4j_exporter }}
+      temporal_admin: ${{ steps.filter.outputs.temporal_admin }}
+      jq: ${{ steps.filter.outputs.jq }}
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Detect changed paths
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            terraform:
+              - 'terraform/**'
+              - '.github/workflows/docker-publish.yml'
+            neo4j_exporter:
+              - 'neo4j_exporter/**'
+              - '.github/workflows/docker-publish.yml'
+            temporal_admin:
+              - 'temporal_admin/**'
+              - '.github/workflows/docker-publish.yml'
+            jq:
+              - 'jq/**'
+              - '.github/workflows/docker-publish.yml'
+
+  build-and-push-terraform:
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    if: needs.detect-changes.outputs.terraform == 'true'
 
     steps:
       - name: Checkout source
@@ -37,9 +67,6 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: Show Docker Hub username
-        run: echo "DOCKER_USER is ${{ secrets.DOCKERHUB_USERNAME }}"
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -71,8 +98,9 @@ jobs:
             ${{ env.DOCKERHUB_REPO_TERRAFORM }}:${{ env.TERRAFORM_VERSION }}-${{ steps.vars.outputs.sha_short }}
 
   build-and-push-neo4j-exporter:
+    needs: detect-changes
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.modified, 'neo4j_exporter/') || contains(github.event.head_commit.added, 'neo4j_exporter/')
+    if: needs.detect-changes.outputs.neo4j_exporter == 'true'
 
     steps:
       - name: Checkout source
@@ -80,9 +108,6 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: Show Docker Hub username
-        run: echo "DOCKER_USER is ${{ secrets.DOCKERHUB_USERNAME }}"
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -106,8 +131,9 @@ jobs:
             ${{ env.DOCKERHUB_REPO_NEO4J_EXPORTER }}:${{ steps.vars.outputs.sha_short }}
 
   build-and-push-temporal-admin:
+    needs: detect-changes
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.modified, 'temporal_admin/') || contains(github.event.head_commit.added, 'temporal_admin/')
+    if: needs.detect-changes.outputs.temporal_admin == 'true'
 
     steps:
       - name: Checkout source
@@ -115,9 +141,6 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: Show Docker Hub username
-        run: echo "DOCKER_USER is ${{ secrets.DOCKERHUB_USERNAME }}"
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -141,8 +164,9 @@ jobs:
             ${{ env.DOCKERHUB_REPO_TEMPORAL_ADMIN_TOOLS }}:${{ steps.vars.outputs.sha_short }}
 
   build-and-push-jq:
+    needs: detect-changes
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.modified, 'jq/') || contains(github.event.head_commit.added, 'jq/')
+    if: needs.detect-changes.outputs.jq == 'true'
 
     steps:
       - name: Checkout source
