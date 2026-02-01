@@ -7,6 +7,7 @@ on:
       - 'terraform/**'
       - 'neo4j_exporter/**'
       - 'jq/**'
+      - 'temporal_admin/**'
       - '.github/workflows/docker-publish.yml'
 
 env:
@@ -106,6 +107,7 @@ jobs:
 
   build-and-push-temporal-admin:
     runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.modified, 'temporal_admin/') || contains(github.event.head_commit.added, 'temporal_admin/')
 
     steps:
       - name: Checkout source

@@ -1,6 +1,6 @@
 FROM debian:bookworm-slim
 
-ARG JQ_VERSION=1.8.1
+ARG JQ_VERSION=1.8.0
 ARG TARGETARCH
 
 RUN apt-get update && \
