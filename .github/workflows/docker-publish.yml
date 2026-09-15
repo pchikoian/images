@@ -8,6 +8,7 @@ on:
       - 'neo4j_exporter/**'
       - 'jq/**'
       - 'temporal_admin/**'
+      - 'gitlab_runner/**'
       - '.github/workflows/docker-publish.yml'
 
 env:
@@ -15,6 +16,7 @@ env:
   DOCKERHUB_REPO_NEO4J_EXPORTER: ricklin/neo4j_exporter
   DOCKERHUB_REPO_TEMPORAL_ADMIN_TOOLS: ricklin/temporal_admin_tools
   DOCKERHUB_REPO_JQ: ricklin/jq
+  DOCKERHUB_REPO_GITLAB_RUNNER: ricklin/gitlab_runner
   TERRAFORM_VERSION: 1.13.1
   JQ_VERSION: 1.8.1
 
@@ -34,6 +36,7 @@ jobs:
       neo4j_exporter: ${{ steps.filter.outputs.neo4j_exporter }}
       temporal_admin: ${{ steps.filter.outputs.temporal_admin }}
       jq: ${{ steps.filter.outputs.jq }}
+      gitlab_runner: ${{ steps.filter.outputs.gitlab_runner }}
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -54,6 +57,9 @@ jobs:
               - '.github/workflows/docker-publish.yml'
             jq:
               - 'jq/**'
+              - '.github/workflows/docker-publish.yml'
+            gitlab_runner:
+              - 'gitlab_runner/**'
               - '.github/workflows/docker-publish.yml'
 
   build-and-push-terraform:
@@ -197,3 +203,36 @@ jobs:
           tags: |
             ${{ env.DOCKERHUB_REPO_JQ }}:latest
             ${{ env.DOCKERHUB_REPO_JQ }}:${{ env.JQ_VERSION }}-${{ steps.vars.outputs.sha_short }}
+
+  build-and-push-gitlab-runner:
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    if: needs.detect-changes.outputs.gitlab_runner == 'true'
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Get short commit SHA
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Build and push GitLab Runner image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./gitlab_runner
+          file: ./gitlab_runner/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_REPO_GITLAB_RUNNER }}:latest
+            ${{ env.DOCKERHUB_REPO_GITLAB_RUNNER }}:${{ steps.vars.outputs.sha_short }}
